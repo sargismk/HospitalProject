@@ -108,7 +108,6 @@ namespace Hospital
                                 break;
                             case 3:
                                 Console.WriteLine("Error: something went wrong");
-                                Start(false);
                                 break;
                         }
                     });
