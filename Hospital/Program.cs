@@ -59,6 +59,15 @@ namespace Hospital
             Console.ReadLine();
         }
 
+        public static void DoSignIn(MySqlConnection conn, string username, string password)
+        {
+            UserUsername = username;
+            UserPassword = password;
+            string role = UserRole = DB.signIn(conn, username, password);
+
+            Init(conn, role, username, password);
+        }
+
         public static void Start(Boolean signedIn)
         {
             MySqlConnection conn = DBUtils.GetDBConnection();
@@ -79,20 +88,34 @@ namespace Hospital
             {
                 Console.WriteLine("1.SignUp" + "\n" + "2.SignIn");
                 int line = Convert.ToInt16(Console.ReadLine());
+                Console.Write("Username: ");
+                string username = Console.ReadLine().Replace("Username: ", "");
+                Console.Write("Password: ");
+                string password = Console.ReadLine().Replace("Password: ", "");
                 if (line == 1)
                 {
+                    DB.signUp(conn, username, password, "patient", (result) =>
+                    {
+                        switch(result)
+                        {
+                            case 1:
+                                Console.WriteLine("You are successfuly signed up");
+                                DoSignIn(conn, username, password);
+                                break;
+                            case 2:
+                                Console.WriteLine("Username: " + username + " already exists");
+                                Start(false);
+                                break;
+                            case 3:
+                                Console.WriteLine("Error: something went wrong");
+                                Start(false);
+                                break;
+                        }
+                    });
                 }
                 else if (line == 2)
                 {
-                    Console.Write("Username: ");
-                    string username = Console.ReadLine().Replace("Username: ", "");
-                    Console.Write("Password: ");
-                    string password = Console.ReadLine().Replace("Password: ", "");
-                    UserUsername = username;
-                    UserPassword = password;
-                    string role = UserRole = DB.signIn(conn, username, password);
-
-                    Init(conn, role, username, password);
+                    DoSignIn(conn, username, password);
                 }
                 else Console.WriteLine("Error: qqqq Write correct command \n");
                 Console.ReadLine();
@@ -100,11 +123,9 @@ namespace Hospital
         }
     }
 }
-//Patient patient = new Patient("patient", "patient");hesa kgam du araok
+//Patient patient = new Patient("patient", "patient");
 //Doctor doctor = new Doctor("doctor", "doctor");
 //doctor.AddPatient(patient);
 //doctor.GetPatientHistory();
-//pateint historyin veradzardzuma ira patientnerin @ndhamen@
-//??chi kara @tex pacientin accept ani?
-//ed funkcian patientnerin veradzardznelu hamara xi @tex accept ani??? ba vorna accept anelu?
+
 

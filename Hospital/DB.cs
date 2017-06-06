@@ -19,6 +19,37 @@ namespace Hospital
 
             return conn;
         }
+        public static void signUp(MySqlConnection conn, string username, string password, string role, Action<int> callback)
+        {
+            MySqlCommand user = new MySqlCommand("SELECT * FROM users WHERE username = @username AND password = @password", conn);
+            user.Parameters.AddWithValue("@username", username);
+            user.Parameters.AddWithValue("@password", password);
+            MySqlDataReader Reader = user.ExecuteReader();
+            if (!Reader.HasRows)
+            {
+                try
+                {
+                    Reader.Close();
+                    MySqlCommand exists_user = new MySqlCommand("INSERT INTO users (username, password, role) VALUES (@username, @password, @role)", conn);
+                    exists_user.Parameters.AddWithValue("@username", username);
+                    exists_user.Parameters.AddWithValue("@password", password);
+                    exists_user.Parameters.AddWithValue("@role", role);
+                    MySqlDataReader ReaderExistsUser = exists_user.ExecuteReader();
+                    ReaderExistsUser.Close();
+                    callback(1);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    callback(3);
+                }
+            }
+            else
+            {
+                Reader.Close();
+                callback(2);
+            }
+        }
         public static string signIn(MySqlConnection conn, string username, string password)
         {
             MySqlCommand user = new MySqlCommand("SELECT * FROM users WHERE username = @username AND password = @password", conn);
