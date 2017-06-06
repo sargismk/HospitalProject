@@ -100,11 +100,3 @@ namespace Hospital
         }
     }
 }
-//Patient patient = new Patient("patient", "patient");hesa kgam du araok
-//Doctor doctor = new Doctor("doctor", "doctor");
-//doctor.AddPatient(patient);
-//doctor.GetPatientHistory();
-//pateint historyin veradzardzuma ira patientnerin @ndhamen@
-//??chi kara @tex pacientin accept ani?
-//ed funkcian patientnerin veradzardznelu hamara xi @tex accept ani??? ba vorna accept anelu?
-
