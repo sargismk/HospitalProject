@@ -15,9 +15,15 @@ namespace Hospital
         {
             requestPatients = new List<Patient>();
         }
-        public void ServePatient(Patient patient)
+        public void PatientHistory(MySqlConnection conn,Doctor doctor)
         {
-            requestPatients.Remove(patient);
+            MySqlDataReader Reader = DB.getRequests(conn, "doctor_username", doctor.getUsername(), true);
+            int i = 1;
+            while (Reader.Read())
+            {
+                Console.Write(i + " " + Reader["patient_username"] + " " + "\n");
+                i++;
+            }
         }
         public void AddPatient(Patient patient) {
             if (requestPatients != null) {
@@ -33,16 +39,16 @@ namespace Hospital
             while (Reader.Read())
             {
                 requests.Add((int)Reader["id"]);
-                Console.Write(i + " " + Reader["patient_username"] + " " + Reader["accepted"] + "\n");
+                Console.Write(i + " " + Reader["patient_username"] + " requested for consultation in "+ Convert.ToDateTime(Reader["date"]).ToString("yyyy-MM-dd H:mm") + "\n");
                 i++;
             }
             Reader.Close();
-
             int line = Convert.ToInt16(Console.ReadLine());
 
             DB.AcceptRequest(conn, requests[line - 1]);
 
             Console.ReadLine();
+            conn.Close();
         }
         protected override Role GetUserRole()
         {

@@ -33,6 +33,12 @@ namespace Hospital
                     {
                         case 2:
                             doctor.MyRequest(conn, doctor);
+                            Start(true);
+                            break;
+                        case 3:
+                            doctor.PatientHistory(conn, doctor);
+                            Console.WriteLine();
+                            Start(true);
                             break;
                     }
                     break;
@@ -47,26 +53,40 @@ namespace Hospital
                             break;
                         case 2:
                             patient.MyRequest(conn, patient);
+                            Start(true);
+                            break;
+                        case 3:
+                            patient.PatientHistory(conn, patient);
                             break;
                     }
                     break;
                 case "admin":
                     Admin admin = new Admin(username, password);
                     admin.ActivCommands();
+                    line = Convert.ToInt16(Console.ReadLine());
+                    switch (line)
+                    {
+                        case 1:
+                            Console.Write("Username: ");
+                            username = Console.ReadLine().Replace("Username: ", "");
+                            Console.Write("Password: ");
+                            password = Console.ReadLine().Replace("Password: ", "");
+                            Console.Write("Proffesion: ");
+                            string profession= Console.ReadLine().Replace("Proffesion: ", "");
+                            admin.AddDoctor(conn,username,password,profession);
+                            Start(true);
+                            break;
+                        case 2:
+                            //admin.MyRequest(conn, patient);
+                            break;
+                    }
                     break;
             }
 
             Console.ReadLine();
         }
 
-        public static void DoSignIn(MySqlConnection conn, string username, string password)
-        {
-            UserUsername = username;
-            UserPassword = password;
-            string role = UserRole = DB.signIn(conn, username, password);
 
-            Init(conn, role, username, password);
-        }
 
         public static void Start(Boolean signedIn)
         {
@@ -94,12 +114,12 @@ namespace Hospital
                 string password = Console.ReadLine().Replace("Password: ", "");
                 if (line == 1)
                 {
-                    DB.signUp(conn, username, password, "patient", (result) =>
+                    DB.signUp(conn, username, password, "patient", null, (result) =>
                     {
-                        switch(result)
+                        switch (result)
                         {
                             case 1:
-                                Console.WriteLine("You are successfuly signed up");
+                                Console.WriteLine("You are successfully signed up");
                                 DoSignIn(conn, username, password);
                                 break;
                             case 2:
@@ -118,6 +138,21 @@ namespace Hospital
                 }
                 else Console.WriteLine("Error: qqqq Write correct command \n");
                 Console.ReadLine();
+            }
+        }
+     public static void DoSignIn(MySqlConnection conn, string username, string password)
+        {
+            UserUsername = username;
+            UserPassword = password;
+            string role = UserRole = DB.signIn(conn, username, password);
+            if(role == "error")
+            {
+                conn.Close();
+                Start(false);
+            }
+            else
+            {
+                Init(conn, role, username, password);
             }
         }
     }

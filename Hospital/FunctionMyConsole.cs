@@ -33,13 +33,5 @@ namespace Hospital
                 }
             }
         }
-        public static void signUp(MySqlConnection con)
-        {
-            Console.WriteLine("SignUp how:" + "\n" + "1.Doctor" + "\n" + "2.Patient");
-            int line = Convert.ToInt16(Console.ReadLine());
-            if (line == 1) { }
-            else if (line == 2) { }
-            else { Console.WriteLine("Error:  Write correct command \n"); }
-        }
     }
 }

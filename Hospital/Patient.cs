@@ -13,6 +13,23 @@ namespace Hospital
         {
            
         }
+        public void TypeDate(MySqlConnection conn, string doctor_username, string patient_username)
+        {
+            Console.WriteLine("Enter a date like: (yyyy.MM.dd H:mm)");
+            DateTime date;
+            if (DateTime.TryParse(Console.ReadLine(), out date))
+            {
+                DB.RequestForConsultation(conn, doctor_username, patient_username, date);
+                Console.WriteLine("{0:yyyy-MM-dd H:mm}", date);
+            }
+            else
+            {
+                Console.WriteLine("You have entered an incorrect value.");
+                TypeDate(conn, doctor_username, patient_username);
+            }
+
+            Console.ReadLine();
+        }
         public void RequestForConsultation(MySqlConnection conn, Patient patient) {
             MySqlDataReader Reader = DB.getUsers(conn, "doctor");
 
@@ -29,9 +46,7 @@ namespace Hospital
 
             int line = Convert.ToInt16(Console.ReadLine());
 
-            DB.RequestForConsultation(conn, doctors[line - 1], patient.getUsername());
-
-            Console.ReadLine();
+            TypeDate(conn, doctors[line - 1], patient.getUsername());
         }
 
         protected override Role GetUserRole()
@@ -53,16 +68,25 @@ namespace Hospital
             MySqlDataReader Reader = DB.getRequests(conn, "patient_username", patient.getUsername(), true);
             List<int> requests = new List<int>();
 
-            int i = 1;
             while (Reader.Read())
             {
                 requests.Add((int)Reader["id"]);
-                Console.Write(i + " " + Reader["doctor_username"] + "\n");
-                i++;
+                Console.Write(Reader["doctor_username"] + " " + Convert.ToDateTime(Reader["date"]).ToString("yyyy-MM-dd H:mm") + "\n");
             }
             Reader.Close();
 
-            Console.ReadLine();
+            Console.WriteLine();
+            conn.Close();
+        }
+        public void PatientHistory(MySqlConnection conn, Patient patient)
+        {
+            MySqlDataReader Reader = DB.getRequests(conn, "patient_username", patient.getUsername(), true);
+            int i = 1;
+            while (Reader.Read())
+            {
+                Console.Write(i + " " + Reader["doctor_username"] + " " + "\n");
+                i++;
+            }
         }
 
     }

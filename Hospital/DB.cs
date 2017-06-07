@@ -19,7 +19,7 @@ namespace Hospital
 
             return conn;
         }
-        public static void signUp(MySqlConnection conn, string username, string password, string role, Action<int> callback)
+        public static void signUp(MySqlConnection conn, string username, string password, string role, string profession, Action<int> callback)
         {
             MySqlCommand user = new MySqlCommand("SELECT * FROM users WHERE username = @username AND password = @password", conn);
             user.Parameters.AddWithValue("@username", username);
@@ -30,10 +30,11 @@ namespace Hospital
                 try
                 {
                     Reader.Close();
-                    MySqlCommand exists_user = new MySqlCommand("INSERT INTO users (username, password, role) VALUES (@username, @password, @role)", conn);
+                    MySqlCommand exists_user = new MySqlCommand("INSERT INTO users (username, password, role, profession) VALUES (@username, @password, @role, @profession)", conn);
                     exists_user.Parameters.AddWithValue("@username", username);
                     exists_user.Parameters.AddWithValue("@password", password);
                     exists_user.Parameters.AddWithValue("@role", role);
+                    exists_user.Parameters.AddWithValue("@profession", profession);
                     MySqlDataReader ReaderExistsUser = exists_user.ExecuteReader();
                     ReaderExistsUser.Close();
                     callback(1);
@@ -59,12 +60,16 @@ namespace Hospital
             if (!Reader.HasRows)
             {
                 Console.WriteLine("Error: Username and Password dont match \n");
+                return "error";
             }
-            Reader.Read();
-            string role = (string)Reader["role"];
-            Reader.Close();
+            else
+            {
+                Reader.Read();
+                string role = (string)Reader["role"];
+                Reader.Close();
 
-            return role;
+                return role;
+            }
         }
         public static MySqlDataReader getUsers(MySqlConnection conn, string role)
         {
@@ -78,14 +83,14 @@ namespace Hospital
 
             return Reader;
         }
-        public static void RequestForConsultation(MySqlConnection conn, string doctor_username, string patient_username)
+        public static void RequestForConsultation(MySqlConnection conn, string doctor_username, string patient_username, DateTime date)
         {
             try
             {
-                MySqlCommand comm = new MySqlCommand("INSERT INTO requests (doctor_username, patient_username) VALUES (@doctor_username, @patient_username)", conn);
-
+                MySqlCommand comm = new MySqlCommand("INSERT INTO requests (doctor_username, patient_username, date) VALUES (@doctor_username, @patient_username, @date)", conn);
                 comm.Parameters.AddWithValue("@doctor_username", doctor_username);
                 comm.Parameters.AddWithValue("@patient_username", patient_username);
+                comm.Parameters.AddWithValue("@date", date.ToString("yyyy-MM-dd H"));
 
                 comm.ExecuteNonQuery();
 
@@ -102,7 +107,7 @@ namespace Hospital
         }
         public static MySqlDataReader getRequests(MySqlConnection conn, string db_user_username, string user_username, Boolean accepted)
         {
-            MySqlCommand requests = new MySqlCommand("SELECT * FROM requests WHERE " + db_user_username + " = @user_username AND accepted = @accepted", conn);
+            MySqlCommand requests = new MySqlCommand("SELECT * FROM requests WHERE " + db_user_username + " = @user_username AND accepted = @accepted AND date >= CURDATE()", conn);
             requests.Parameters.AddWithValue("@user_username", user_username);
             requests.Parameters.AddWithValue("@accepted", accepted);
             MySqlDataReader Reader = requests.ExecuteReader();

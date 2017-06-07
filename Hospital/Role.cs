@@ -12,36 +12,21 @@ namespace Hospital
         PATIENT,
         ADMIN,
     }
-    enum Command
-    {
-        Nothing,
-        SignUp=1,
-        SignIn,
-        Calendar,
-        PatientHistory,
-        ServeAPatient,
-        RequestForConsultation,
-        AddDoctor,
-        MyRequest,
-        Request,
-        Reports,
-    }
     enum PatientCommand
     {
         RequestForConsultation=1,//++
-        MyRequest,//+
-        PatientHistory,
+        MyRequest,//+ um mot petq lini jam or
+        PatientHistory,//um mota exel jam or
     }
     enum DoctorCommand
     {
-        Calendar=1,
+        Calendar=1,//ov petqa lini jam or
         MyRequest,//+
-        PatientHistory,
-        ServeAPatient,
+        PatientHistory,//ova exel jam or
     }
     enum AdminCommand
     {
-        AddDoctor=1,
+        AddDoctor=1,//+
         Reports,
     }
 }

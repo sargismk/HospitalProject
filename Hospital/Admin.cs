@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,10 +24,23 @@ namespace Hospital
             }
         }
 
-        public void AddDoctor(Doctor doctor)
+        public void AddDoctor(MySqlConnection conn,string username,string password,string profession)
         {
-            //connect to db to add doctor
-
+            DB.signUp(conn, username, password, "doctor",profession, (result) =>
+            {
+            switch (result)
+            {
+                case 1:
+                    Console.WriteLine("Doctor are successfully created");
+                    break;
+                case 2:
+                    Console.WriteLine("Username: " + username + " already exists");
+                    break;
+                case 3:
+                    Console.WriteLine("Error: something went wrong");
+                    break;
+            }
+        });
         }
         protected override Role GetUserRole()
         {
